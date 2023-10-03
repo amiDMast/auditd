@@ -1,0 +1,78 @@
+---
+- name: Auditd create rules directory /etc/audit/rules.d
+  file:
+    path: "/etc/audit/rules.d"
+    state: directory
+    mode: '0750'
+  tags:
+    - config
+    - configure
+
+- name: Auditd check if user deploy exist
+  command: getent passwd deploy
+  register: user_deploy_exist
+  ignore_errors: yes
+  failed_when: false
+  tags:
+    - config
+    - configure
+
+- name: Auditd check unused rules files
+  block:
+    - name: Auditd list files in configuration dir
+      command: "ls /etc/audit/rules.d"
+      failed_when: no
+      changed_when: no
+      check_mode: no
+      register: confdir_files
+    - name: Auditd add fact if user deploy exist
+      set_fact:
+        auditd_additional_rules_templates: "{{ auditd_additional_rules_templates + ['deploy'] }}"
+      when: user_deploy_exist.rc == 0
+    - name: Auditd debug auditd_additional_rules_templates
+      debug:
+        var: auditd_additional_rules_templates
+    - name: Auditd delete not managed files in configuration directory
+      file:
+        name: "/etc/audit/rules.d/{{ item }}"
+        state: absent
+      loop: "{{ confdir_files.stdout_lines }}"
+      when: item.replace('.rules', '') not in (auditd_default_rules_templates + auditd_additional_rules_templates)
+  tags:
+    - config
+    - configure
+
+- name: Auditd add default rules
+  copy:
+    src: "{{ item }}.rules"
+    dest: "/etc/audit/rules.d/{{ item }}.rules"
+    mode: '0644'
+    backup: "false"
+  with_items: "{{ auditd_default_rules_templates }}"
+  notify: restart auditd
+  tags:
+    - config
+    - configure
+
+- name: Auditd add deploy.rules file
+  copy:
+    src: deploy.rules
+    dest: /etc/audit/rules.d/deploy.rules
+    mode: 0640
+  when: user_deploy_exist.rc == 0
+  notify: restart auditd
+  tags: 
+    - config
+    - configure
+
+- name: Auditd add auditd custom rules
+  template: 
+    src: custom_rules.j2
+    dest: /etc/audit/rules.d/custom.rules
+    mode: 0640
+    backup: false
+  when: auditd_custom_rules is defined
+  notify: restart auditd
+  tags:
+    - config
+    - configure

@@ -1,0 +1,2 @@
+-a exit,always -F arch=b64 -F euid=deploy -S execve -k audit-wazuh-deploy
+-a exit,always -F arch=b32 -F euid=deploy -S execve -k audit-wazuh-deploy

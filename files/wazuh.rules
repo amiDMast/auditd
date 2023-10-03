@@ -1,0 +1,121 @@
+# /etc/audit/rules.d/wazuh.rules
+# Наблюдение за конфигурационными файлами
+-w /etc/audit/auditd.conf -p w -k audit-wazuh-secret-w
+-w /etc/audit/auditd.conf -p a -k audit-wazuh-secret-a
+-w /etc/audit/rules.d/ -F auid>=1000 -F auid<=2147483647 -p w -k audit-wazuh-secret-w
+-w /etc/audit/rules.d/ -F auid>=1000 -F auid<=2147483647 -p a -k audit-wazuh-secret-a
+-w /etc/audit/rules.d/ -F auid>=1000 -F auid<=2147483647 -p r -k audit-wazuh-r
+-w /etc/audit/rules.d/ -F auid>=1000 -F auid<=2147483647 -p x -k audit-wazuh-secret-x
+-w /etc/libaudit.conf -p w -k audit-wazuh-w
+-w /etc/libaudit.conf -p a -k audit-wazuh-a
+-w /etc/default/auditd -p w -k audit-wazuh-w
+-w /etc/default/auditd -p a -k audit-wazuh-a
+
+# .ssh root
+-w /root/.ssh -F gid!=wazuh -p w -k audit-wazuh-secret-w
+-w /root/.ssh -F gid!=wazuh -p a -k audit-wazuh-secret-a
+-w /root/.ssh -F gid!=wazuh -p r -k audit-wazuh-secret-r
+-w /root/.ssh -F gid!=wazuh -p x -k audit-wazuh-secret-x
+
+# Наблюдение за журнальными файлами
+-w /var/log/audit/ -F gid!=wazuh -p x -k audit-wazuh-secret-x
+-w /var/log/audit/ -F gid!=wazuh -p r -k audit-wazuh-secret-r
+-w /var/log/audit/ -F gid!=wazuh -p w -k audit-wazuh-secret-w
+-w /var/log/audit/ -F gid!=wazuh -p a -k audit-wazuh-secret-a
+
+# Ossec.conf
+-w /var/ossec/etc/ -F auid>=1000 -F auid<=2147483647 -p w -k audit-wazuh-secret-w
+-w /var/ossec/etc/ -F auid>=1000 -F auid<=2147483647 -p a -k audit-wazuh-secret-a
+-w /var/ossec/etc/ -F auid>=1000 -F auid<=2147483647 -p r -k audit-wazuh-r
+-w /var/ossec/etc/ -F auid>=1000 -F auid<=2147483647 -p x -k audit-wazuh-secret-x
+
+# Настройки и задания at
+-w /var/spool/at
+-w /etc/at.allow
+-w /etc/at.deny
+
+
+# Задания cron
+-w /etc/cron.allow -p w -k audit-wazuh-w
+-w /etc/cron.allow -p a -k audit-wazuh-a
+-w /etc/cron.deny -p w -k audit-wazuh-w
+-w /etc/cron.deny -p a -k audit-wazuh-a
+-w /etc/cron.d/ -p w -k audit-wazuh-w
+-w /etc/cron.d/ -p a -k audit-wazuh-a
+-w /etc/cron.daily/ -p w -k audit-wazuh-w
+-w /etc/cron.daily/ -p a -k audit-wazuh-a
+-w /etc/cron.hourly/ -p w -k audit-wazuh-w
+-w /etc/cron.hourly/ -p a -k audit-wazuh-a
+-w /etc/cron.monthly/ -p w -k audit-wazuh-w
+-w /etc/cron.monthly/ -p a -k audit-wazuh-a
+-w /etc/cron.weekly/ -p w -k audit-wazuh-w
+-w /etc/cron.weekly/ -p a -k audit-wazuh-a
+-w /etc/crontab -p w -k audit-wazuh-w
+-w /etc/crontab -p a -k audit-wazuh-a
+-w /var/spool/cron/root
+
+# Файлы паролей и групп
+-w /etc/group -p w -k audit-wazuh-w
+-w /etc/group -p a -k audit-wazuh-a
+-w /etc/passwd -p w -k audit-wazuh-w
+-w /etc/passwd -p a -k audit-wazuh-a
+-w /etc/shadow -p w -k audit-wazuh-secret-w
+-w /etc/shadow -p a -k audit-wazuh-a
+-w /etc/shadow -p r -k audit-wazuh-r
+-w /etc/shadow -p x -k audit-wazuh-x
+
+# Конфигурационные и журнальные файлы входа в систему
+-w /etc/login.defs -p w -k audit-wazuh-w
+-w /etc/login.defs -p a -k audit-wazuh-a
+-w /etc/securetty
+-w /var/log/faillog
+-w /var/log/lastlog
+
+# Список и имена хостов
+-w /etc/hosts -p w -k audit-wazuh-w
+-w /etc/hosts -p a -k audit-wazuh-a
+
+# Стартовые скрипты демонов
+-w /etc/init.d/
+-w /etc/init.d/auditd -p w -k audit-wazuh-w
+-w /etc/init.d/auditd -p a -k audit-wazuh-a
+
+# Пути поиска библиотек
+-w /etc/ld.so.conf.d
+-w /etc/ld.so.conf -p w -k audit-wazuh-w
+-w /etc/ld.so.conf -p a -k audit-wazuh-a
+
+# Настройки времени
+-w /etc/localtime -p w -k audit-wazuh-w
+-w /etc/localtime -p a -k audit-wazuh-a
+
+# Системные переменные
+-w /etc/sysctl.conf -p w -k audit-wazuh-w
+-w /etc/sysctl.conf -p a -k audit-wazuh-a
+
+# Правила загрузки модулей
+-w /etc/modprobe.d/
+
+# Модули системы PAM
+-w /etc/pam.d/
+
+# Настройки сервера SSH
+-w /etc/ssh/sshd_config
+
+# наблюдение за /home
+-w /home -p w -k audit-wazuh-w
+-w /home -p a -k audit-wazuh-a
+#-w /home -p r -k audit-wazuh-r
+-w /home -p x -k audit-wazuh-x
+
+# аудит команд от рута и юзера с конкретным auid
+-a always,exit -F arch=b64 -F euid=0 -F auid>=1000 -F auid!=-1 -F uid!=www-data -S execve -k audit-wazuh-c
+-a always,exit -F arch=b32 -F euid=0 -F auid>=1000 -F auid!=-1 -F uid!=www-data -S execve -k audit-wazuh-c
+-a exit,always -F arch=b64 -F auid>=1000 -F auid<60001 -F auid!=-1 -F uid!=www-data -S execve -k audit-wazuh-c
+-a exit,always -F arch=b32 -F auid>=1000 -F auid<60001 -F auid!=-1 -F uid!=www-data -S execve -k audit-wazuh-c
+-a exit,always -F arch=b64 -F auid>=65535 -F auid<=2147483647 -F auid!=-1 -F uid!=www-data -S execve -k audit-wazuh-c
+-a exit,always -F arch=b32 -F auid>=65535 -F auid<=2147483647 -F auid!=-1 -F uid!=www-data -S execve -k audit-wazuh-c
+
+
+# исключение
+#-a never,exclude -F path=/file_to_exclude -k exclude_file

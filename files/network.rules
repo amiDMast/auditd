@@ -1,0 +1,8 @@
+-w /usr/sbin/iptables -F auid!=-1 -p x -k audit-wazuh-secret-x
+-w /usr/sbin/ip6tables -F auid!=-1 -p x -k audit-wazuh-secret-x
+-w /sbin/ifconfig -F auid!=-1 -p x -k audit-wazuh-secret-x
+-w /usr/sbin/arptables -F auid!=-1 -p x -k audit-wazuh-secret-x
+-w /usr/sbin/ebtables -F auid!=-1 -p x -k audit-wazuh-secret-x
+-w /sbin/xtables-nft-multi -F auid!=-1 -p x -k audit-wazuh-secret-x
+-w /usr/sbin/nft -F auid!=-1 -p x -k audit-wazuh-secret-x
+-w /usr/sbin/xtables-legacy-multi -F auid!=-1 -p x -k audit-wazuh-secret-x

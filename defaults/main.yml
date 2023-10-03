@@ -1,0 +1,5 @@
+auditd_additional_rules_templates: []
+auditd_rules_templates:
+  - audit
+  - wazuh
+  - network

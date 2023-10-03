@@ -1,0 +1,16 @@
+---
+- name: Auditd install
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - auditd
+    - audispd-plugins
+  tags: install
+
+- name: Auditd service enabled
+  service:
+    name: auditd
+    state: started
+    enabled: yes
+  tags: install
